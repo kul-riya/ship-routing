@@ -1,8 +1,9 @@
 #include "graph&csv.h"
 
-// Function to create a new point
-Point* createPoint(int index, double latitude, double longitude, double windspeedNorth, double windspeedEast,
-                   double windStress, double waveCurrentNorth, double waveCurrentEast) {
+// Create a new point
+Point* createPoint(double latitude, double longitude, double windspeedNorth,
+                   double windspeedEast, double windStress,
+                   double waveCurrentNorth, double waveCurrentEast) {
     Point* newPoint = (Point*)malloc(sizeof(Point));
     newPoint->latitude = latitude;
     newPoint->longitude = longitude;
@@ -11,12 +12,11 @@ Point* createPoint(int index, double latitude, double longitude, double windspee
     newPoint->windStress = windStress;
     newPoint->waveCurrentNorth = waveCurrentNorth;
     newPoint->waveCurrentEast = waveCurrentEast;
-    newPoint->arrayIndex = index;
     newPoint->edges = NULL;
     return newPoint;
 }
 
-// Function to create a new edge
+// Create a new edge
 Edge* createEdge(Point* dest, double forward, double backward) {
     Edge* newEdge = (Edge*)malloc(sizeof(Edge));
     newEdge->dest = dest;
@@ -26,61 +26,103 @@ Edge* createEdge(Point* dest, double forward, double backward) {
     return newEdge;
 }
 
-// Function to add an edge to a point's adjacency list
+// Add an edge to a point's adjacency list
 void addEdge(Point* src, Point* dest, double forward, double backward) {
     Edge* newEdge = createEdge(dest, forward, backward);
     newEdge->next = src->edges;
     src->edges = newEdge;
 }
 
-// Function to print the graph (adjacency list)
+// Print the graph (adjacency list)
 void printGraph(Point* points[], int numPoints) {
     for (int i = 0; i < numPoints; i++) {
-        printf("Point %d (Lat: %.2f, Lon: %.2f):\n", points[i]->arrayIndex, points[i]->latitude, points[i]->longitude);
+        printf("Point %d (Lat: %.2f, Lon: %.2f):\n", i, points[i]->latitude, points[i]->longitude);
         Edge* edge = points[i]->edges;
         while (edge) {
-            printf("  -> Point %d (Forward Weight: %.2f, Backward Weight: %.2f)\n",
-                   edge->dest->arrayIndex, edge->forward, edge->backward);
+            printf("  -> Point (Lat: %.2f, Lon: %.2f) [Forward: %.2f, Backward: %.2f]\n",
+                   edge->dest->latitude, edge->dest->longitude, edge->forward, edge->backward);
             edge = edge->next;
         }
         printf("\n");
     }
 }
 
-// Function to load points from a CSV file
-int loadPointsFromCSV(const char* filename, Point* points[], int maxPoints) {
+// Read points from a CSV file
+int readPointsFromCSV(const char* filename, Point* points[], int maxPoints) {
     FILE* file = fopen(filename, "r");
     if (!file) {
-        perror("Error opening file");
-        return -1;
+        perror("Error opening CSV file");
+        return 0;
     }
 
     char line[MAX_LINE_LENGTH];
-    int index = 0;
+    int count = 0;
 
-    // Read each line of the CSV file
-    while (fgets(line, MAX_LINE_LENGTH, file) && index < maxPoints) {
+    while (fgets(line, MAX_LINE_LENGTH, file) && count < maxPoints) {
         double latitude, longitude, windspeedNorth, windspeedEast, windStress, waveCurrentNorth, waveCurrentEast;
-        sscanf(line, "%lf,%lf,%lf,%lf,%lf,%lf,%lf",
-               &latitude, &longitude, &windspeedNorth, &windspeedEast, &windStress, &waveCurrentNorth, &waveCurrentEast);
-
-        points[index] = createPoint(index, latitude, longitude, windspeedNorth, windspeedEast, windStress, waveCurrentNorth, waveCurrentEast);
-        index++;
+        if (sscanf(line, "%lf,%lf,%lf,%lf,%lf,%lf,%lf",
+                   &latitude, &longitude, &windspeedNorth, &windspeedEast,
+                   &windStress, &waveCurrentNorth, &waveCurrentEast) == 7) {
+            points[count] = createPoint(latitude, longitude, windspeedNorth, windspeedEast,
+                                        windStress, waveCurrentNorth, waveCurrentEast);
+            count++;
+        }
     }
 
     fclose(file);
-    return index;
+    return count;
 }
 
-// Function to free allocated memory for the graph
-void freeGraph(Point* points[], int numPoints) {
+// Dijkstra's algorithm
+void dijkstra(Point* points[], int numPoints, int srcIndex, int destIndex) {
+    double dist[numPoints];
+    int prev[numPoints];
+    int visited[numPoints];
+
     for (int i = 0; i < numPoints; i++) {
-        Edge* edge = points[i]->edges;
-        while (edge) {
-            Edge* temp = edge;
-            edge = edge->next;
-            free(temp);
+        dist[i] = DBL_MAX;
+        prev[i] = -1;
+        visited[i] = 0;
+    }
+    dist[srcIndex] = 0;
+
+    for (int i = 0; i < numPoints; i++) {
+        int u = -1;
+        for (int j = 0; j < numPoints; j++) {
+            if (!visited[j] && (u == -1 || dist[j] < dist[u])) {
+                u = j;
+            }
         }
-        free(points[i]);
+
+        if (dist[u] == DBL_MAX)
+            break;
+
+        visited[u] = 1;
+
+        Edge* edge = points[u]->edges;
+        while (edge) {
+            int v = edge->dest - points[0];  // Calculate index
+            double weight = dist[u] + edge->forward;
+            if (weight < dist[v]) {
+                dist[v] = weight;
+                prev[v] = u;
+            }
+            edge = edge->next;
+        }
+    }
+
+    if (dist[destIndex] == DBL_MAX) {
+        printf("No path from Point %d to Point %d\n", srcIndex, destIndex);
+    } else {
+        printf("Shortest path from Point %d to Point %d (Cost: %.2f):\n", srcIndex, destIndex, dist[destIndex]);
+        int path[numPoints], pathIndex = 0;
+        for (int at = destIndex; at != -1; at = prev[at]) {
+            path[pathIndex++] = at;
+        }
+        for (int i = pathIndex - 1; i >= 0; i--) {
+            printf("Point %d ", path[i]);
+            if (i > 0) printf("-> ");
+        }
+        printf("\n");
     }
 }
