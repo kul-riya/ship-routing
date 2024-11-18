@@ -38,7 +38,7 @@ double average(double x, double y){ // returns the mean value of two double inpu
     return (x + y) / 2;
 }
  
-double find_edge(Node start, Node end){ // returns the edge value of an edge between two nodes
+double find_edge(Point start, Point end){ // returns the edge value of an edge between two nodes
     double bearing = find_bearing(start.latitude, start.longitude, end.latitude, end.longitude);
     double avg_north_curr = average(start.waveCurrentNorth, end.waveCurrentNorth);
     double avg_east_curr = average(start.waveCurrentEast, end.waveCurrentEast);
