@@ -1,4 +1,4 @@
-#include "edges.h"
+#include "../include/edges.h"
 
 
 double find_resistance(double ship_bearing, double east_curr, double north_curr, double east_wind, double north_wind){
