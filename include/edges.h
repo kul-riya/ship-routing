@@ -12,4 +12,4 @@ double find_resistance(double ship_bearing, double east_curr, double north_curr,
 double find_bearing(double lat1, double lon1, double lat2, double lon2);
 double haversine_distance(double lat1, double lon1, double lat2, double lon2);
 double average(double x, double y);
-double find_edge(Node start, Node end);
+double find_edge(Point start, Point end);
