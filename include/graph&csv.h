@@ -1,13 +1,14 @@
-#ifndef HEADER_H
-#define HEADER_H
+#ifndef GRAPH_CSV_H
+#define GRAPH_CSV_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 // Constants
-#define BAD_FLAG -1.0E+34
 #define MAX_LINE_LENGTH 1024
+#define MAX_POINTS 100
 
 // Edge structure
 typedef struct Edge {
@@ -21,22 +22,27 @@ typedef struct Edge {
 typedef struct Point {
     double latitude;           // Latitude of the point
     double longitude;          // Longitude of the point
-    double windspeedNorth;     // Northward wind speed (vector)
-    double windspeedEast;      // Eastward wind speed (vector)
-    double windStress;         // Northward wind stress (scalar)
-    double waveCurrentNorth;   // Northward wave current (vector)
-    double waveCurrentEast;    // Eastward wave current (vector)
-    int arrayIndex;            // Index of this point in the point array
-    struct Edge* edges;        // Head of the list of edges connected to this point
+    double windspeedNorth;     // Northward wind speed
+    double windspeedEast;      // Eastward wind speed
+    double windStress;         // Wind stress
+    double waveCurrentNorth;   // Northward wave current
+    double waveCurrentEast;    // Eastward wave current
+    struct Edge* edges;        // Head of the adjacency list for this point
 } Point;
 
 // Function prototypes
-Point* createPoint(int index, double latitude, double longitude, double windspeedNorth, double windspeedEast,
-                   double windStress, double waveCurrentNorth, double waveCurrentEast);
-Edge* createEdge(Point* dest, double forward, double backward);
-void addEdge(Point* src, Point* dest, double forward, double backward);
-void printGraph(Point* points[], int numPoints);
-int loadPointsFromCSV(const char* filename, Point* points[], int maxPoints);
-void freeGraph(Point* points[], int numPoints);
+Point* createPoint(double latitude, double longitude, double windspeedNorth,
+                   double windspeedEast, double windStress,
+                   double waveCurrentNorth, double waveCurrentEast);
 
-#endif // HEADER_H
+Edge* createEdge(Point* dest, double forward, double backward);
+
+void addEdge(Point* src, Point* dest, double forward, double backward);
+
+void printGraph(Point* points[], int numPoints);
+
+int readPointsFromCSV(const char* filename, Point* points[], int maxPoints);
+
+void dijkstra(Point* points[], int numPoints, int srcIndex, int destIndex);
+
+#endif

@@ -1,5 +1,5 @@
 #include <math.h>
-#include "graph.h"
+#include "graph&csv.h"
 
 #define STILL_WATER_RESISTANCE 1500 // average still water resistance for large container ships
 #define EARTH_RADIUS_KM 6371.0  // Earth radius in kilometers
@@ -12,4 +12,4 @@ double find_resistance(double ship_bearing, double east_curr, double north_curr,
 double find_bearing(double lat1, double lon1, double lat2, double lon2);
 double haversine_distance(double lat1, double lon1, double lat2, double lon2);
 double average(double x, double y);
-double find_edge(Node start, Node end);
+double find_edge(Point start, Point end);
