@@ -3,23 +3,29 @@
 #include <string.h>
 
 #include "../include/base_functions.h"
+#include "../include/edges.h"
 
 #define MAX_LINE_LENGTH 70
-#define DATE_LEN 24
+#define DATE_LEN 23.75
+
+#define START_LON 68.0
+#define END_LON 89.0
+#define START_LAT 4.0
+#define END_LAT 23.75
+#define INTERVAL 43
 
 // initialize graph
 void initialize(Graph *g, int sizeLimit) {
 	g->adjList = calloc(sizeLimit, sizeof(Point *)); // creates list of sizeLimit pointers to struct Point
 													 // initialized to NULL.
 	g->sizeLimit = sizeLimit;
-	printf("Graph initialized\n");
+//	printf("Graph initialized\n");
 }
 
 // Create a new point
 Point* createPoint(char *date, double time, double latitude, double longitude, double windspeedNorth,
                    double windspeedEast, double waveCurrentNorth, double waveCurrentEast) {
     Point* newPoint = (Point*)malloc(sizeof(Point));
-	printf("point created\n");
 	newPoint->date = date;
 	newPoint->time = time;
     newPoint->latitude = latitude;
@@ -29,6 +35,8 @@ Point* createPoint(char *date, double time, double latitude, double longitude, d
     newPoint->waveCurrentNorth = waveCurrentNorth;
     newPoint->waveCurrentEast = waveCurrentEast;
     newPoint->edges = NULL;
+
+//	printf("point created\n");
     return newPoint;
 }
 
@@ -39,12 +47,14 @@ Edge* createEdge(Point* dest, double forward, double backward) {
     newEdge->forward = forward;
     newEdge->backward = backward;
     newEdge->next = NULL;
+//	printf("created edge: dest->lat = %lf, dest->lon = %lf\n", dest->latitude, dest->longitude);
     return newEdge;
 }
 
 // Add an edge to a point's adjacency list
-void addEdge(Point* src, Point* dest, double forward, double backward) {
-    Edge* newEdge = createEdge(dest, forward, backward);
+void addEdge(Point* src, Point* dest) {
+//	printf("adding edge: dest->lat = %lf, dest->lon = %lf\n", dest->latitude, dest->longitude);
+    Edge* newEdge = createEdge(dest, find_edge(*src, *dest), find_edge(*dest, *src));
     newEdge->next = src->edges;
     src->edges = newEdge;
 }
@@ -52,8 +62,10 @@ void addEdge(Point* src, Point* dest, double forward, double backward) {
 // Print the graph (adjacency list)
 void printGraph(Graph *g) {
 	Point **points = g->adjList;
+	int maxPoints = g->sizeLimit;
     //for (int i = 0; points[i]; i++) {
-    for (int i = 0; i < 5; i++) {
+	//TODO: change maxpoints
+    for (int i = 0; i < 5 && points[i]; i++) {
         printf("Point %d (Lat: %.2f, Lon: %.2f):\n", i, points[i]->latitude, points[i]->longitude);
         Edge* edge = g->adjList[i]->edges;
         while (edge) {
@@ -74,21 +86,17 @@ int readPointsFromCSV(const char* filename, Graph *g) {
     
     char line[MAX_LINE_LENGTH];
     int count = 0;
-	printf("reading points from csv\n");
+	//printf("reading points from csv\n");
 	Point **points = g->adjList;
 	int maxPoints = g->sizeLimit;
 	fgets(line, MAX_LINE_LENGTH, file); // omit header line
-	// testing
-	char c1[10], c2[10], c3[10], c4[10];
-	sscanf(line, "%*s,%*s,%*s,%*s,%s,%s,%s,%s", c1, c2, c3, c4);
-	printf("yo what%s, %s, %s, %s\n", c1, c2, c3, c4);
-
+//	printf("%s", line);
+	
     while (fgets(line, MAX_LINE_LENGTH, file) && count < maxPoints) {
 		char *date = malloc(DATE_LEN);
         double time, latitude, longitude, windspeedNorth, windspeedEast, waveCurrentNorth, waveCurrentEast;
-		if (date) printf("malloced date\n");
-		printf("%s\n", line);
-        if (sscanf(line, "%s,%lf,%lf,%lf,%lf,%lf,%lf,%lf",
+//		printf("%d\t%s", count, line);
+        if (sscanf(line, "%[^,],%lf,%lf,%lf,%lf,%lf,%lf,%lf",
 				   date, &time, &longitude, &latitude, 
 				   &windspeedNorth, &windspeedEast,
                    &waveCurrentNorth, &waveCurrentEast) == 8) {
@@ -98,7 +106,45 @@ int readPointsFromCSV(const char* filename, Graph *g) {
     }
 
     fclose(file);
+	printf("file closed\n");
     return count;
+}
+
+// 
+int isNull(Point *p) {
+	return !p->windspeedNorth && !p->windspeedEast && !p->waveCurrentNorth && !p->waveCurrentEast;
+}
+
+// adding all required edges to each point
+void initEdges(Graph *g) {
+	printf("Initializing edges\n");
+	Point **points = g->adjList;
+	double lon, lat;
+	for (int i = 0; i < g->sizeLimit && points[i]; i++) {
+//	for (int i = 42; i == 42; i++) {
+		lat = points[i]->latitude;
+		lon = points[i]->longitude;
+//		printf("%lf %lf\n", lat, lon);
+		if (lon != START_LON) {
+			addEdge(points[i], points[i - 1]); // left
+			if (lat != START_LAT) {
+				addEdge(points[i], points[i - INTERVAL - 1]); // top left
+			} if (lat != END_LAT) addEdge(points[i], points[i + INTERVAL - 1]); // bottom left
+		} if (lon != END_LON) {
+			 addEdge(points[i], points[i + 1]); // right
+			if (lat != START_LAT) {
+				addEdge(points[i], points[i - INTERVAL + 1]); // top right
+			}
+			if (lat != END_LAT) addEdge(points[i], points[i + INTERVAL + 1]); // bottom right
+
+		} if (lat != START_LAT) {
+			addEdge(points[i], points[i - INTERVAL]); // up
+		} if (lat != END_LAT) {
+			addEdge(points[i], points[i + INTERVAL]); // down
+		}
+	}
+		
+			
 }
 
 // Dijkstra's algorithm

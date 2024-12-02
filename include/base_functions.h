@@ -3,6 +3,9 @@
 #include <string.h>
 #include <float.h>
 
+#ifndef BASE_FUNC
+#define BASE_FUNC
+
 // Point structure
 typedef struct Point {
 	char *date;
@@ -44,11 +47,16 @@ Point* createPoint(char *, double, double latitude, double longitude, double win
 
 Edge* createEdge(Point* dest, double forward, double backward);
 
-void addEdge(Point* src, Point* dest, double forward, double backward);
+void addEdge(Point* src, Point* dest);
 
 void printGraph(Graph *);
+
+void initEdges(Graph *);
 
 int readPointsFromCSV(const char* filename, Graph *);
 
 // void dijkstra(Point* points[], int numPoints, int srcIndex, int destIndex);
+
+#endif
+
 

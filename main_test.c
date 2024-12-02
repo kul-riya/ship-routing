@@ -2,7 +2,8 @@
 #include "include/base_functions.h"
 
 #define FILEPATH "data/merged_everything.csv"
-#define MAX_POINTS 5 // total number of records in FILEPATH
+#define MAX_POINTS 3440 // total number of records in FILEPATH
+					 // change to 3440
 
 int main() {
 	// INITIALIZE GRAPH
@@ -11,6 +12,7 @@ int main() {
 
 	// CREATE GRAPH
 	readPointsFromCSV(FILEPATH, &g);
+	initEdges(&g);
 	printGraph(&g);
 
 	return 0;
