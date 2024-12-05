@@ -44,10 +44,14 @@ void initialize(Graph *g, int);
 
 Point* createPoint(char *, double, double latitude, double longitude, double windspeedNorth,
                    double windspeedEast, double waveCurrentNorth, double waveCurrentEast);
+                   
+int isNull(Point *p);
 
 Edge* createEdge(Point* dest, double forward, double backward);
 
 void addEdge(Point* src, Point* dest);
+
+void printPoint(Point *p, int i);
 
 void printGraph(Graph *);
 

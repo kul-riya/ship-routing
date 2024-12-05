@@ -13,8 +13,18 @@ int main() {
 	// CREATE GRAPH
 	readPointsFromCSV(FILEPATH, &g);
 	initEdges(&g);
-	printGraph(&g);
+//	printGraph(&g);
+	
+	for (int i = 0; i < 5; i++) {
+		printPoint(g.adjList[i], i);
+	}
+	for (int i = 45; i < 50; i++) {
+		printPoint(g.adjList[i], i);
+	}
 
+	for (int i = 3430; i < 3434; i++) {
+		printPoint(g.adjList[i], i);
+	}
 	return 0;
 	
 }
