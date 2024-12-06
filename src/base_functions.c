@@ -172,7 +172,7 @@ void initEdges(Graph *g) {
 	Point **points = g->adjList;
 	Point *destPoint;
 	int adjacent[3] = {-1, 0, 1};
-	double lon, lat;
+	double lon, lat, destLat, destLon;
 	for (int i = 0; i < g->sizeLimit; i++) {
 	//for (int i = 230; i < 235; i++) {
 		if (!points[i]) continue;
@@ -180,13 +180,16 @@ void initEdges(Graph *g) {
 		lon = points[i]->longitude;
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 3; k++) {
+				int count = 2;
 				if (j == 1 && k == 1) continue;
 //				printf("%f, %f\n", lat + adjacent[j] * RESOLUTION, lon + adjacent[k] * RESOLUTION);
-				destPoint = retrieve(g, lat + adjacent[j] * (0.25), lon + adjacent[k] * 0.5);
-				if (destPoint) {
-					addEdge(points[i], destPoint);
+				destLat = lat + adjacent[j] * (0.25); destLon = lon + adjacent[k] * 0.5;
+				destPoint = retrieve(g, destLat, destLon);
+				while (!destPoint && count--) {
+					destLat = destLat + adjacent[j] * (0.25); destLon = destLon + adjacent[k] * 0.5;
+					destPoint = retrieve(g, destLat, destLon);
 				}
-
+				if (destPoint) addEdge(points[i], destPoint);
 			}
 		}
 //		printf("\n");
