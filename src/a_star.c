@@ -8,15 +8,16 @@
 #define INF DBL_MAX  // Infinite value for unreachable nodes
 
 #include "../include/base_functions.h"
+#include "../include/edges.h"
 
 
 void a_star(Graph *g, int startIndex, int endIndex) {
+	printf("in a_star\n");
     int numPoints = g->sizeLimit;
     Point** points = g->adjList;
     double dist[numPoints];  // Distance from start to each point
     int prev[numPoints];     // Previous node in the optimal path
     bool visited[numPoints]; // To mark visited nodes
-    double haversine_distance_to_dest[numPoints];
     
     // Initialize distances, previous nodes, and visited status
     for (int i = 0; i < numPoints; i++) {
@@ -31,7 +32,7 @@ void a_star(Graph *g, int startIndex, int endIndex) {
         int u = -1;
         double minDist = INF;
         for (int i = 0; i < numPoints; i++) {
-            if (!visited[i] && dist[i] + haversine_distance(points[i]->latitude, points[i]->longitude, points[endIndex]->latitude, points[endIndex]->longitude) < minDist) {
+            if (points[i] && !visited[i] && dist[i] + haversine_distance(points[i]->latitude, points[i]->longitude, points[endIndex]->latitude, points[endIndex]->longitude) < minDist) {
                 u = i;
                 minDist = dist[i];
             }

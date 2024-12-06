@@ -13,7 +13,7 @@ int main() {
 	// CREATE GRAPH
 	readPointsFromCSV(FILEPATH, &g);
 	initEdges(&g);
-	printGraph(&g);
+	//printGraph(&g);
 	
 	//for (int i = 0; i < 1000; i++) {
 		//printPoint(g.adjList[i], i);
@@ -26,6 +26,8 @@ int main() {
 		printPoint(g.adjList[i], i);
 	}
 */
+
+	a_star(&g, 21, 233);
 	return 0;
 	
 }

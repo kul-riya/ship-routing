@@ -47,6 +47,8 @@ Point* createPoint(char *, double, double latitude, double longitude, double win
                    
 int isNull(Point *p);
 
+void a_star(Graph *g, int startIndex, int endIndex);
+
 int calculate_index(double latitude, double longitude);
 
 int remove_float_error(double num);
