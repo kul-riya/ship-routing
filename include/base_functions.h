@@ -6,6 +6,17 @@
 #ifndef BASE_FUNC
 #define BASE_FUNC
 
+#define MAX_LINE_LENGTH 240
+#define DATE_LEN 24
+
+#define START_LON 68.0
+#define END_LON 89.0
+#define START_LAT 4.0
+#define END_LAT 23.75
+#define RESOLUTION 0.5
+
+# define LON_COUNT 43
+
 // Point structure
 typedef struct Point {
 	char *date;

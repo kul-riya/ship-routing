@@ -63,11 +63,12 @@ void a_star(Graph *g, int startIndex, int endIndex) {
         return;
     }
     
-    printf("\nShortest path from Point %d to Point %d:\n", startIndex, endIndex);
+    printf("\nShortest path from %.2lf N, %.2lf E to %.2lf N, %.2lf E:\n", points[startIndex]->latitude, points[startIndex]->longitude, points[endIndex]->latitude, points[endIndex]->longitude);
     int current = endIndex;
     while (current != startIndex) {
-        printf("Point %d <- ", calculate_index(points[current]->latitude, points[current]->longitude));
+        printf(" %.2lf N, %.2lf E <--", points[current]->latitude, points[current]->longitude);
         current = prev[current];
     }
-    printf("  Point %d\n", startIndex);
+    printf(" %.2lf N, %.2lf E\n", points[current]->latitude, points[current]->longitude);
+    return;
 }

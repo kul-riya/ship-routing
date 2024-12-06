@@ -5,16 +5,6 @@
 #include "../include/base_functions.h"
 #include "../include/edges.h"
 
-#define MAX_LINE_LENGTH 240
-#define DATE_LEN 24
-
-#define START_LON 68.0
-#define END_LON 89.0
-#define START_LAT 4.0
-#define END_LAT 23.75
-#define RESOLUTION 0.5
-
-# define LON_COUNT 43
 
 // initialize graph
 void initialize(Graph *g, int sizeLimit) {
@@ -83,7 +73,6 @@ void printPoint(Point *p, int i) {
 // Print the graph (adjacency list)
 void printGraph(Graph *g) {
 	Point **points = g->adjList;
-	int maxPoints = g->sizeLimit;
     //for (int i = 0; points[i]; i++) {
     for (int i = 0; i < g->sizeLimit; i++) {
         printPoint(points[i], i);
@@ -152,7 +141,10 @@ int calculate_index(double latitude, double longitude) {
 
 // Point has no data
 int isNull(Point *p) {
-	return p->windspeedNorth <= -1e+10 || p->windspeedEast <= -1e+10 || p->waveCurrentNorth <= -1e+10 || p->waveCurrentEast <= -1e+10;
+    //printf("isnull called\n");
+	int t =  p->windspeedNorth <= -1e+10 || p->windspeedEast <= -1e+10 || p->waveCurrentNorth <= -1e+10 || p->waveCurrentEast <= -1e+10;
+    //printf("%d", t);
+    return t;
 }
 
 // Function to retrieve data from the hash table (graph)
