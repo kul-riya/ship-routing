@@ -3,7 +3,7 @@
 
 #define FILEPATH "data/merged_everything.csv"
 #define MAX_POINTS 3440 // total number of records in FILEPATH
-					 // change to 3440
+					 	// change to 3440
 
 int main() {
 	// INITIALIZE GRAPH
@@ -13,18 +13,19 @@ int main() {
 	// CREATE GRAPH
 	readPointsFromCSV(FILEPATH, &g);
 	initEdges(&g);
-//	printGraph(&g);
+	printGraph(&g);
 	
-	for (int i = 0; i < 5; i++) {
-		printPoint(g.adjList[i], i);
-	}
-	for (int i = 45; i < 50; i++) {
+	//for (int i = 0; i < 1000; i++) {
+		//printPoint(g.adjList[i], i);
+	//}
+/*	for (int i = 45; i < 50; i++) {
 		printPoint(g.adjList[i], i);
 	}
 
-	for (int i = 3430; i < 3434; i++) {
+	for (int i = 3430; i < 3440; i++) {
 		printPoint(g.adjList[i], i);
 	}
+*/
 	return 0;
 	
 }

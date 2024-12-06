@@ -47,6 +47,10 @@ Point* createPoint(char *, double, double latitude, double longitude, double win
                    
 int isNull(Point *p);
 
+int calculate_index(double latitude, double longitude);
+
+int remove_float_error(double num);
+
 Edge* createEdge(Point* dest, double forward, double backward);
 
 void addEdge(Point* src, Point* dest);
