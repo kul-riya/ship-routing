@@ -11,12 +11,12 @@
 #include "../include/edges.h"
 
 
-void a_star(Graph *g, int startIndex, int endIndex) {
+int * a_star(Graph *g, int startIndex, int endIndex) {
 	printf("in a_star\n");
     int numPoints = g->sizeLimit;
     Point** points = g->adjList;
     double dist[numPoints];  // Distance from start to each point
-    int prev[numPoints];     // Previous node in the optimal path
+    int *prev = malloc(sizeof(int) * numPoints);     // Previous node in the optimal path
     bool visited[numPoints]; // To mark visited nodes
     
     // Initialize distances, previous nodes, and visited status
@@ -60,15 +60,15 @@ void a_star(Graph *g, int startIndex, int endIndex) {
     // Print the shortest path from startIndex to endIndex
     if (dist[endIndex] == INF) {
         printf("No path exists between Point %d and Point %d\n", startIndex, endIndex);
-        return;
+        return NULL;
     }
     
-    printf("\nShortest path from %.2lf N, %.2lf E to %.2lf N, %.2lf E:\n", points[startIndex]->latitude, points[startIndex]->longitude, points[endIndex]->latitude, points[endIndex]->longitude);
+    //printf("\nShortest path from %.2lf N, %.2lf E to %.2lf N, %.2lf E:\n", points[startIndex]->latitude, points[startIndex]->longitude, points[endIndex]->latitude, points[endIndex]->longitude);
     int current = endIndex;
     while (current != startIndex) {
         printf(" %.2lf N, %.2lf E <--", points[current]->latitude, points[current]->longitude);
         current = prev[current];
     }
     printf(" %.2lf N, %.2lf E\n", points[current]->latitude, points[current]->longitude);
-    return;
+    return prev;
 }
